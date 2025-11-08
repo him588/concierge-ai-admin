@@ -112,6 +112,7 @@ function Signup({ login, setLogin }: Render) {
   function handleResend() {
     if (isResendSuccess) return;
     resolveError(setErrorMsg, "otp");
+    console.log("hello");
     setIsResendSuccess(true);
     setTimeout(() => {
       setIsResendSuccess(false);
