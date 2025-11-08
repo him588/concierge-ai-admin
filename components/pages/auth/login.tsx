@@ -1,8 +1,9 @@
 "use client";
 import { GoogleIcon } from "@/components/assets/icons";
 import Input from "@/components/common/input";
+import { handleChangeState, resolveError } from "@/components/helper/helper";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 type Render = {
   login: boolean;
   setLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -10,6 +11,34 @@ type Render = {
 
 function Login({ login, setLogin }: Render) {
   const router = useRouter();
+  const [loginForm, setLoginForm] = useState({
+    email: "",
+    password: "",
+  });
+  const [errorMsg, setErrorMsg] = useState({
+    email: "",
+    password: "",
+  });
+
+  function handleLogin() {
+    if (!loginForm.email) {
+      setErrorMsg((prev) => {
+        return { ...prev, email: "Email should not be empty" };
+      });
+      return;
+    }
+    if (!loginForm.password) {
+      setErrorMsg((prev) => {
+        return { ...prev, password: "Password is required" };
+      });
+      return;
+    }
+  }
+
+  useEffect(() => {
+    console.log(loginForm);
+  }, [loginForm]);
+
   return (
     <>
       <div className=" h-full  max-w-[28rem]">
@@ -21,8 +50,20 @@ function Login({ login, setLogin }: Render) {
         </p>
 
         <div className="mt-[2rem] flex flex-col gap-[1.5rem]">
-          <Input title="Your Email" />
-          <Input title="Password" />
+          <Input
+            title="Your Email"
+            value={loginForm.email}
+            onChange={(e) => handleChangeState(e, setLoginForm, "email")}
+            onFocus={() => resolveError(setErrorMsg, "email")}
+            msg={errorMsg.email}
+          />
+          <Input
+            title="Password"
+            value={loginForm.password}
+            onChange={(e) => handleChangeState(e, setLoginForm, "password")}
+            onFocus={() => resolveError(setErrorMsg, "password")}
+            msg={errorMsg.password}
+          />
           <div className=" w-full flex justify-end relative -mt-[.5rem]">
             <p
               onClick={() => router.push("/forgot-password")}
@@ -31,7 +72,10 @@ function Login({ login, setLogin }: Render) {
               Forgot Password?
             </p>
           </div>
-          <button className=" w-full cursor-pointer hover:scale-[1.02] h-[45px] mt-[1.5rem] rounded-md bg-[#1f2123] hover:bg-[#1f2123]/90 transition-all duration-250 text-[14px] font-semibold">
+          <button
+            onClick={handleLogin}
+            className=" w-full cursor-pointer hover:scale-[1.02] h-[45px] mt-[1.5rem] rounded-md bg-[#1f2123] hover:bg-[#1f2123]/90 transition-all duration-250 text-[14px] font-semibold"
+          >
             Login
           </button>
           <div className="w-full flex items-center justify-center gap-[8px] mt-[1rem]">

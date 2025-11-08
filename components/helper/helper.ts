@@ -8,3 +8,14 @@ export function handleChangeState<T>(
     return updatedValue;
   });
 }
+
+export function resolveError<T>(
+  setForm: React.Dispatch<React.SetStateAction<T>>,
+  key: string
+) {
+  setForm((prev) => {
+    const updatedValue = { ...prev, [key]: "" };
+    console.log(updatedValue);
+    return updatedValue;
+  });
+}

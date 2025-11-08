@@ -8,22 +8,27 @@ import React, {
 } from "react";
 
 type OTPInputProps = {
+  values: string[];
+  setValues: React.Dispatch<React.SetStateAction<string[]>>;
   length?: number;
   autoFocus?: boolean;
   className?: string;
   onChange?: (otp: string) => void;
   onComplete?: (otp: string) => void;
+  onFocus: () => void;
 };
 
 const OTPInput: React.FC<OTPInputProps> = ({
   length = 6,
+  values,
+  setValues,
   autoFocus = true,
   className = "",
   onChange,
   onComplete,
+  onFocus,
 }) => {
   // values array
-  const [values, setValues] = useState<string[]>(() => Array(length).fill(""));
 
   // refs for inputs
   const inputsRef = useRef<Array<HTMLInputElement | null>>(
@@ -127,6 +132,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
           value={values[index]}
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
+          onFocus={() => onFocus()}
           onPaste={handlePaste}
           maxLength={1}
           inputMode="numeric"
