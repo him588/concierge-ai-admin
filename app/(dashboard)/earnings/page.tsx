@@ -1,8 +1,7 @@
-import Auth from "@/components/pages/auth/auth";
 import React from "react";
 
 function Page() {
-  return <Auth />;
+  return <div></div>;
 }
 
 export default Page;

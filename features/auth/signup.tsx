@@ -2,7 +2,7 @@ import { GoogleIcon } from "@/components/assets/icons";
 import Input from "@/components/common/input";
 import { ArrowLeft, ChevronLeft, MoveLeft } from "lucide-react";
 import React, { useState, useRef } from "react";
-import OTPInput from "./sub-components/otp-input";
+import OTPInput from "./components/otp-input";
 import { handleChangeState, resolveError } from "@/components/helper/helper";
 
 type Render = {

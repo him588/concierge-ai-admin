@@ -2,7 +2,7 @@
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import OTPInput from "./sub-components/otp-input";
+import OTPInput from "./components/otp-input";
 import Input from "@/components/common/input";
 
 function ForgotPassword() {
