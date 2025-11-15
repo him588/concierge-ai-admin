@@ -15,11 +15,11 @@ type OTPInputProps = {
   className?: string;
   onChange?: (otp: string) => void;
   onComplete?: (otp: string) => void;
-  onFocus: () => void;
+  onFocus?: () => void; // made optional
 };
 
 const OTPInput: React.FC<OTPInputProps> = ({
-  length = 6,
+  length = 4, // default to 4 now
   values,
   setValues,
   autoFocus = true,
@@ -28,12 +28,15 @@ const OTPInput: React.FC<OTPInputProps> = ({
   onComplete,
   onFocus,
 }) => {
-  // values array
-
   // refs for inputs
-  const inputsRef = useRef<Array<HTMLInputElement | null>>(
-    Array(length).fill(null)
-  );
+  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
+
+  // keep refs array in sync with length
+  useEffect(() => {
+    inputsRef.current = Array(length)
+      .fill(null)
+      .map((_, i) => inputsRef.current[i] ?? null);
+  }, [length]);
 
   // keep parent informed when values change
   useEffect(() => {
@@ -42,8 +45,8 @@ const OTPInput: React.FC<OTPInputProps> = ({
     if (otp.length === length && !values.includes("")) {
       onComplete?.(otp);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values]); // onChange/onComplete are callbacks; include them if you want to re-run when they change
+    // include callbacks to be safe
+  }, [values, length, onChange, onComplete]);
 
   // autofocus first input
   useEffect(() => {
@@ -81,7 +84,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
     const key = e.key;
 
     if (key === "Backspace") {
-      e.preventDefault(); // keep behavior consistent
+      e.preventDefault();
       setValues((prev) => {
         const next = [...prev];
         if (next[index]) {
@@ -116,9 +119,9 @@ const OTPInput: React.FC<OTPInputProps> = ({
       return next;
     });
 
-    // focus next empty (or last)
-    const nextIndex = Math.min(paste.length, length - 1);
-    focusInput(nextIndex);
+    // focus last filled or last input
+    const lastFilled = Math.min(paste.length, length) - 1;
+    focusInput(Math.max(0, lastFilled));
   };
 
   return (
@@ -129,10 +132,10 @@ const OTPInput: React.FC<OTPInputProps> = ({
           ref={(el) => {
             inputsRef.current[index] = el;
           }}
-          value={values[index]}
+          value={values[index] ?? ""}
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
-          onFocus={() => onFocus()}
+          onFocus={() => onFocus?.()}
           onPaste={handlePaste}
           maxLength={1}
           inputMode="numeric"

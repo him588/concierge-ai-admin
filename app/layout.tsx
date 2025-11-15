@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import { BaseProvider } from "@/context/base-context";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -13,9 +14,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const appConfig = {
+    ServiceBaseUrl: `${process.env.ServiceBaseUrl}/api/v1` || "",
+    GoogleClientId: process.env.GoogleClientId || "",
+  };
+
   return (
     <html lang="en">
-      <body className={`${poppins.variable}`}>{children}</body>
+      <BaseProvider appConfig={appConfig}>
+        <body className={`${poppins.variable}`}>{children}</body>
+      </BaseProvider>
     </html>
   );
 }

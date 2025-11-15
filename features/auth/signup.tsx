@@ -4,6 +4,14 @@ import { ArrowLeft, ChevronLeft, MoveLeft } from "lucide-react";
 import React, { useState, useRef } from "react";
 import OTPInput from "./components/otp-input";
 import { handleChangeState, resolveError } from "@/components/helper/helper";
+import {
+  googleAuthentication,
+  registerUser,
+  resendOtp,
+  verifyUser,
+} from "./api";
+import { useRouter } from "next/navigation";
+import { useGoogleLogin } from "@react-oauth/google";
 
 type Render = {
   login: boolean;
@@ -12,27 +20,25 @@ type Render = {
 
 function Signup({ login, setLogin }: Render) {
   const [render, setRender] = useState<"default" | "verify" | "success">(
-    "verify"
+    "default"
   );
-
+  const [isResendSuccess, setIsResendSuccess] = useState(false);
   const [signupForm, setSignupForm] = useState({
     name: "",
     email: "",
     password: "",
+    userId: "",
   });
-
   const [errorMsg, setErrorMsg] = useState({
     name: "",
     email: "",
     password: "",
     otp: "",
   });
-
-  const [isResendSuccess, setIsResendSuccess] = useState(false);
-
   const [values, setValues] = useState<string[]>(() => Array(length).fill(""));
+  const router = useRouter();
 
-  function handleSignup() {
+  async function handleSignup() {
     // Reset errors first
     setErrorMsg({ name: "", email: "", password: "", otp: "" });
 
@@ -84,7 +90,22 @@ function Signup({ login, setLogin }: Render) {
       return;
     }
 
-    setRender("verify");
+    try {
+      const response = await registerUser(
+        signupForm.name,
+        signupForm.email,
+        signupForm.password
+      );
+      if (response.status === 201) {
+        setRender("verify");
+        setSignupForm((prev) => {
+          return { ...prev, userId: response.data.newUser._id };
+        });
+      }
+    } catch (error) {
+      console.log("Error while register user", error);
+    }
+
     console.log("Signup successful:", signupForm);
   }
 
@@ -92,7 +113,7 @@ function Signup({ login, setLogin }: Render) {
     const otp = values.join("").trim();
     setErrorMsg((prev) => ({ ...prev, otp: "" }));
 
-    if (otp.length < 6) {
+    if (otp.length < 4) {
       setErrorMsg((prev) => ({
         ...prev,
         otp: `Opps !Incorrect otp`,
@@ -107,16 +128,57 @@ function Signup({ login, setLogin }: Render) {
       }));
       return;
     }
+    try {
+      console.log(signupForm.userId, otp, signupForm.email);
+      const response = await verifyUser(
+        signupForm.userId,
+        otp,
+        signupForm.email
+      );
+      if (response.status === 200) {
+        router.push("/overview");
+      }
+    } catch (error) {
+      console.log("Error while verify user", error);
+    }
+    console.log(otp);
   }
 
-  function handleResend() {
+  async function handleResend() {
     if (isResendSuccess) return;
-    resolveError(setErrorMsg, "otp");
-    setIsResendSuccess(true);
-    setTimeout(() => {
-      setIsResendSuccess(false);
-    }, 5000);
+    try {
+      const response = await resendOtp(signupForm.email);
+      if (response.status === 200) {
+        resolveError(setErrorMsg, "otp");
+        setIsResendSuccess(true);
+        setTimeout(() => {
+          setIsResendSuccess(false);
+        }, 5000);
+      }
+    } catch (error) {
+      console.log("Error while resend otp", error);
+    }
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function googleResponse(res: any) {
+    try {
+      console.log(res);
+      if (res.access_token) {
+        const response = await googleAuthentication(res.access_token);
+        if (response.status === 201 || response.status === 200) {
+          router.push("/overview");
+        }
+      }
+    } catch (error) {
+      console.log("Error while google authentication", error);
+    }
+  }
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: googleResponse,
+    onError: googleResponse,
+  });
 
   return (
     <>

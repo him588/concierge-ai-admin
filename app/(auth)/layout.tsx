@@ -2,6 +2,8 @@
 "use client";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 import {
   Navigation,
   Pagination,
@@ -15,11 +17,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
+import AppConfig from "@/components/lib/app-config";
 
 type Props = { children?: React.ReactNode };
 
 export default function SliderLayout({ children }: Props) {
   // sample images — replace these with your image URLs
+
   const slides = [
     "https://images.unsplash.com/photo-1652057295518-d2a109170821?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fEhvdGVsJTIwc3RhZmYlMjBtYW5hZ21lbnR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600",
     "https://plus.unsplash.com/premium_photo-1664301007671-570a410c5c35?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGhvdGVsJTIwY2xlYW5pbmd8ZW58MHwxfDB8fHww&auto=format&fit=crop&q=60&w=600",
@@ -126,9 +130,11 @@ export default function SliderLayout({ children }: Props) {
           </Swiper>
         </div>
       </div>
-      <div className=" w-[65%] h-auto">{children}</div>
-
-      {/* page children (content to the right, below, etc.) */}
+      <div className=" w-[65%] h-auto">
+        <GoogleOAuthProvider clientId={AppConfig.env.GoogleClientId}>
+          {children}
+        </GoogleOAuthProvider>
+      </div>
     </div>
   );
 }

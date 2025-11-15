@@ -7,3 +7,20 @@ export type InputProps = {
   value?: string;
   key?: string;
 };
+
+export type DynamicConfig = {
+  GoogleClientId: string;
+  ServiceBaseUrl: string;
+};
+
+export type AuthToken = {
+  exp: EpochTimeStamp;
+  user_id: number;
+  email: string;
+  name: string;
+};
+
+export type MetaData = {
+  Authorization: string;
+  [x: string]: string;
+};
