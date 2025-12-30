@@ -10,6 +10,7 @@ import { googleAuthentication, userLogin } from "./api";
 import { JWTProvider } from "@/components/lib/jwt-provider";
 import CookieProvider from "@/components/lib/cookie";
 import { REFRESH_TOKEN } from "@/components/types/const";
+import ServiceProvider from "@/components/api/service-provider";
 
 type Render = {
   login: boolean;
@@ -34,7 +35,13 @@ function Login({ login, setLogin }: Render) {
       if (res.access_token) {
         const response = await googleAuthentication(res.access_token);
         if (response.status === 201 || response.status === 200) {
-          router.push("/overview");
+          router.push("/onboarding");
+          CookieProvider.setCookie(REFRESH_TOKEN, response.data.refreshToken, {
+            path: "/",
+            expires: new Date(Date.now() + 30 * 60 * 1000),
+          });
+          JWTProvider.setAccessToken(response.data.accessToken);
+          ServiceProvider.initializeClient();
         }
       }
     } catch (error) {
@@ -66,12 +73,12 @@ function Login({ login, setLogin }: Render) {
       if (response.status === 200) {
         console.log(response.data);
         const accessToken = response.data.accessToken;
-        JWTProvider.decodeAndSetToken(accessToken);
+        JWTProvider.setAccessToken(accessToken);
         CookieProvider.setCookie(REFRESH_TOKEN, response.data.refreshToken, {
           path: "/",
           expires: new Date(Date.now() + 30 * 60 * 1000),
         });
-        console.log(JWTProvider.metadata);
+        // console.log(JWTProvider.metadata);
 
         router.push("/overview");
       }

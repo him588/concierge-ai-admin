@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { BaseProvider } from "@/context/base-context";
@@ -17,6 +16,7 @@ export default function RootLayout({
   const appConfig = {
     ServiceBaseUrl: `${process.env.ServiceBaseUrl}/api/v1` || "",
     GoogleClientId: process.env.GoogleClientId || "",
+    GoogleMapKey: process.env.GoogleMapKey || "",
   };
 
   return (

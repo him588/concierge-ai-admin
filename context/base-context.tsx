@@ -21,20 +21,19 @@ export const BaseProvider = ({
   useEffect(() => {
     const refresh = async () => {
       const refreshToken = CookieProvider.getCookie(REFRESH_TOKEN);
+      console.log("refresh token value", refreshToken);
       if (!refreshToken) return;
       try {
         const response = await refreshAccessToken(refreshToken);
-        console.log("is auto refreshing", response.data);
         const accessToken = response.data.accessToken;
-        JWTProvider.decodeAndSetToken(accessToken);
+        JWTProvider.setAccessToken(accessToken);
         ServiceProvider.initializeClient();
-        console.log("Refreshed Access Token:", accessToken);
       } catch (err) {
         console.error("Failed to refresh:", err);
       }
     };
     refresh();
-    const interval = setInterval(refresh, 1 * 60 * 1000);
+    const interval = setInterval(refresh, 14 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 

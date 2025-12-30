@@ -11,6 +11,7 @@ export type InputProps = {
 export type DynamicConfig = {
   GoogleClientId: string;
   ServiceBaseUrl: string;
+  GoogleMapKey: string;
 };
 
 export type AuthToken = {

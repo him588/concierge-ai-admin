@@ -8,17 +8,21 @@ import axios, {
 import AppConfig from "../lib/app-config";
 import CookieProvider from "../lib/cookie";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../types/const";
+import { JWTProvider } from "../lib/jwt-provider";
 
 class ServiceProvider {
   public static apiClient: AxiosInstance | null = null;
 
   public static initializeClient(): AxiosInstance {
+    console.log("access token",JWTProvider.getMetaData())
     if (this.apiClient) return this.apiClient;
-    const baseURL = AppConfig?.env?.ServiceBaseUrl || "";
+    console.log("initialize client")
+    const baseURL = `${AppConfig?.env?.ServiceBaseUrl}` || "";
     const client = axios.create({ baseURL, timeout: 30_000 });
     client.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        const accessToken = CookieProvider.getCookie(ACCESS_TOKEN);
+        const accessToken = JWTProvider.getAccessToken();
+        console.log("access token", accessToken);
         if (accessToken) {
           config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${accessToken}`;

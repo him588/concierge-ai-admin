@@ -4,7 +4,6 @@ class AppConfig {
   private static config: DynamicConfig;
 
   static set(value: DynamicConfig) {
-    console.log(value);
     this.config = { ...value };
   }
 

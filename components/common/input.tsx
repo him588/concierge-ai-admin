@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from "react";
 import { InputProps } from "../types/types";
 
@@ -30,6 +29,7 @@ function Input(inputProps: InputProps) {
         onBlur={() => {
           setIsFocused(false);
         }}
+        value={inputProps.value}
         onChange={inputProps.onChange}
         placeholder={inputProps.placeholder}
         className={`text-[#1c1d4e] text-[14px]  placeholder:text-[#a7a9a8] w-full h-[45px] border-[1.5px] border-solid     ${

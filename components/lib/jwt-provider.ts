@@ -2,55 +2,38 @@ import { decodeJwtToken } from "../helper/helper";
 import { AuthToken, MetaData } from "../types/types";
 
 export class JWTProvider {
-  private static accessToken?: AuthToken;
-  private static metaData: MetaData;
-  private static updateMetadata(authToken: string) {
-    if (this.accessToken && authToken) {
+  private static accessToken?: string;
+  private static userDetails?: AuthToken;
+  private static metaData: MetaData ;
+
+  private static updateMeta() {
+    if (this.accessToken) {
       this.metaData = {
-        Authorization: `Bearer ${authToken}`,
+        Authorization: `Bearer ${this.accessToken}`,
       };
     }
   }
 
-  static set token(value: AuthToken | undefined) {
-    this.accessToken = value;
+  static setAccessToken(token: string) {
+    this.accessToken = token;
+    this.userDetails = decodeJwtToken(token);
+    this.updateMeta();
   }
 
-  static get token(): AuthToken | undefined {
+  static getAccessToken(): string | undefined {
     return this.accessToken;
   }
 
-  static set metadata(value: MetaData) {
-    this.metaData = value;
+  static getUserDetails(): AuthToken | undefined {
+    return this.userDetails;
   }
 
-  static get metadata(): MetaData {
+  static getMetaData(): MetaData {
     return this.metaData;
   }
 
-  static decode<T>(value: string): T | undefined {
-    try {
-      return decodeJwtToken(value || "");
-    } catch (error) {
-      console.error("Failed to decode token:", error);
-      return undefined;
-    }
-  }
-
-  static decodeAndSetToken(value: string): boolean {
-    const decodedToken = this.decode<AuthToken>(value);
-    console.log("decoded token", decodedToken);
-    if (decodedToken) {
-      this.token = {
-        ...decodedToken,
-      };
-      this.updateMetadata(value);
-      return true;
-    }
-    return false;
-  }
-
-  static clearToken() {
-    this.token = undefined;
+  static clear() {
+    this.accessToken = undefined;
+    this.userDetails = undefined;
   }
 }
