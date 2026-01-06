@@ -2,9 +2,9 @@ import React, { SetStateAction } from "react";
 
 export enum PropertyType {
   Hotel = "Hotel",
-  Penthouse = "Penthouse",
   Villa = "Villa",
   Apartment = "Apartment",
+  Dorm = "Dorm",
 }
 
 export type address = {
@@ -27,6 +27,7 @@ export type onboardingForm = {
   location: address;
   coordinates: coordinates;
   tags: string[];
+  price?: number;
 };
 
 export type formType = {

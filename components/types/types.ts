@@ -4,8 +4,9 @@ export type InputProps = {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onFocus?: () => void;
   msg?: string;
-  value?: string;
+  value?: string | number;
   key?: string;
+  type?: string;
 };
 
 export type DynamicConfig = {

@@ -94,7 +94,8 @@ function LocationPicker(location: locationProps) {
 
       {/* Fixed center pin */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <Pin size={36} className="text-blue-600" />
+        {/* <Pin size={36} className="text-blue-600" /> */}
+        <img src="/location.png" alt="" className=" h-[40] object-cover" />
       </div>
     </div>
   );

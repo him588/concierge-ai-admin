@@ -1,9 +1,11 @@
 "use client";
+
 import React, { useState } from "react";
 import { ChevronRight, Upload } from "lucide-react";
 import { formType } from "../types/type";
 import ServiceProvider from "@/components/api/service-provider";
 import { useRouter } from "next/navigation";
+
 const AMENITIES = [
   "WiFi",
   "Parking",
@@ -17,60 +19,75 @@ const AMENITIES = [
 
 function StepThree(formOptions: formType) {
   const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+  const MIN_FILES = 3;
   const MAX_FILES = 5;
-  const { setCurrentStep,onboardingForm,setOnboardingForm } = formOptions;
+
+  const { setCurrentStep, onboardingForm, setOnboardingForm } = formOptions;
   const [images, setImages] = useState<File[]>([]);
+  const [imageError, setImageError] = useState("");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
-  const router=useRouter()
+  const router = useRouter();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    const files = [...e.target.files];
-    console.log(e.target.files)
-    if (!files.length) return;
 
-    if (files.length > MAX_FILES) {
-      alert(`You can upload max ${MAX_FILES} images`);
-      return;
-    }
+    const selectedFiles = Array.from(e.target.files);
+    const validFiles: File[] = [];
+    let error = "";
 
-    const validFiles = [];
-
-    for (const file of files) {
+    for (const file of selectedFiles) {
       if (!file.type.startsWith("image/")) {
-        alert(`${file.name} is not an image`);
+        error = `${file.name} is not an image`;
         continue;
       }
 
       if (file.size > MAX_FILE_SIZE) {
-        alert(`${file.name} is larger than 2MB`);
+        error = `${file.name} is larger than 2MB`;
         continue;
       }
 
       validFiles.push(file);
     }
 
-    setImages(validFiles);
+    const totalImages = images.length + validFiles.length;
+
+    if (totalImages > MAX_FILES) {
+      setImageError(`You can upload maximum ${MAX_FILES} images`);
+      return;
+    }
+
+    setImages((prev) => [...prev, ...validFiles]);
+    setImageError("");
   };
 
- async function handleContinue(){
-    const formdata=new FormData()
-    setOnboardingForm(prev=>{
-      const updatedForm={...prev,tags:selectedAmenities}
-      return updatedForm
-    })
-    formdata.append("userDetails",JSON.stringify({...onboardingForm,tags:selectedAmenities}))
-     images.forEach((img)=>formdata.append(`images`,img))
+  async function handleContinue() {
+    if (images.length < MIN_FILES) {
+      setImageError(`Minimum ${MIN_FILES} images are required`);
+      return;
+    }
 
-     console.log(formdata)
-   const response= await ServiceProvider.apiClient?.post("/property/register-property",formdata)
-   console.log(ServiceProvider.apiClient)
-   console.log(response?.data)
-   if(response?.data){
-    router.push("/overview")
-   }
-     
-     
+    const formdata = new FormData();
+
+    setOnboardingForm((prev) => ({
+      ...prev,
+      tags: selectedAmenities,
+    }));
+
+    formdata.append(
+      "userDetails",
+      JSON.stringify({ ...onboardingForm, tags: selectedAmenities })
+    );
+
+    images.forEach((img) => formdata.append("images", img));
+
+    const response = await ServiceProvider.apiClient?.post(
+      "/property/register-property",
+      formdata
+    );
+
+    if (response?.data) {
+      router.push("/overview");
+    }
   }
 
   const toggleAmenity = (amenity: string) => {
@@ -86,12 +103,12 @@ function StepThree(formOptions: formType) {
       {/* Images Upload */}
       <div>
         <p className="text-[14px] text-[#a7a9a8] mb-1">
-          Property Images (3 images required)
+          Property Images (Min 3 · Max 5)
         </p>
 
         <label
           className="flex items-center justify-center gap-2 h-[44px] rounded-lg 
-        border border-dashed border-[#1c1d4e] cursor-pointer text-[#1c1d4e]"
+          border border-dashed border-[#1c1d4e] cursor-pointer text-[#1c1d4e]"
         >
           <Upload size={18} />
           Upload Images
@@ -106,15 +123,19 @@ function StepThree(formOptions: formType) {
 
         {images.length > 0 && (
           <p className="text-xs text-green-600 mt-1">
-            {images.length} image(s) selected
+            {images.length} / {MAX_FILES} images selected
           </p>
+        )}
+
+        {imageError && (
+          <p className="text-xs text-red-500 mt-1">{imageError}</p>
         )}
       </div>
 
       {/* Amenities */}
       <div>
         <p className="text-[14px] text-[#a7a9a8] mb-2">
-          Add tags (Helps user for better search)
+          Add tags (Helps users for better search)
         </p>
 
         <div className="flex flex-wrap gap-3">
@@ -123,6 +144,7 @@ function StepThree(formOptions: formType) {
             return (
               <button
                 key={amenity}
+                type="button"
                 onClick={() => toggleAmenity(amenity)}
                 className={`px-4 py-2 rounded-lg border-[2px] text-sm transition
                 ${
@@ -139,9 +161,9 @@ function StepThree(formOptions: formType) {
       </div>
 
       {/* Continue Button */}
-      <div  className="flex justify-end">
+      <div className="flex justify-end">
         <button
-          // disabled={images.length < 3}
+          disabled={images.length < MIN_FILES}
           onClick={handleContinue}
           className="mt-[20px] w-[200px] h-[44px] rounded-xl 
           bg-[#1c1d4e] text-white font-medium flex items-center justify-center

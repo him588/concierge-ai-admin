@@ -11,7 +11,9 @@ function Layout({ children }: { children: React.ReactNode }) {
       <div className=" min-w-[20%] relative z-50 h-full">
         <Sidebar />
       </div>
-      <div className="w-[80%] pt-[2rem] pr-[2rem]">{children}</div>
+      <div className="w-[80%] pt-[2rem] pr-[2rem] scrollbar-hide overflow-y-scroll ">
+        {children}
+      </div>
     </div>
   );
 }

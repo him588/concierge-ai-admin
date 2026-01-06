@@ -19,7 +19,7 @@ function Input(inputProps: InputProps) {
       )}
 
       <input
-        type="text"
+        type={"text"}
         onFocus={() => {
           setIsFocused(true);
           if (inputProps.onFocus) {

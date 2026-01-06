@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import Input from "@/components/common/input";
 import React from "react";
@@ -7,31 +8,52 @@ import { formType, PropertyType } from "../types/type";
 
 function StepOne(formOptions: formType) {
   const { onboardingForm, setOnboardingForm, setCurrentStep } = formOptions;
-  const [errorMsg, setErroMsg] = useState("");
+
+  const [nameError, setNameError] = useState("");
+  const [priceError, setPriceError] = useState("");
 
   const types: { label: string; value: PropertyType }[] = [
     { label: "Hotel", value: PropertyType.Hotel },
-    { label: "Penthouse", value: PropertyType.Penthouse },
     { label: "Villa", value: PropertyType.Villa },
     { label: "Apartment", value: PropertyType.Apartment },
+    { label: "Dorm", value: PropertyType.Dorm },
   ];
 
+  const shouldAskPrice =
+    onboardingForm.propertyType === PropertyType.Villa ||
+    onboardingForm.propertyType === PropertyType.Apartment;
+
   const handleContinue = () => {
-    if (onboardingForm.name === "") {
-      setErroMsg("Name is required");
-      return;
-    } else {
-      setCurrentStep((prev) => prev + 1);
+    let hasError = false;
+
+    // Name validation
+    if (!onboardingForm.name.trim()) {
+      setNameError("Property name is required");
+      hasError = true;
     }
+
+    // Price validation (only for Villa & Apartment)
+    if (
+      shouldAskPrice &&
+      (!onboardingForm.price || onboardingForm.price <= 0)
+    ) {
+      setPriceError("Price is required for Villa and Apartment");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    setCurrentStep((prev) => prev + 1);
   };
 
   return (
     <div className="w-[420px] flex flex-col gap-[20px] mt-[40px]">
+      {/* Property Name */}
       <Input
         title="Property Name"
         value={onboardingForm.name}
-        msg={errorMsg}
-        onFocus={() => setErroMsg("")}
+        msg={nameError}
+        onFocus={() => setNameError("")}
         onChange={(e) =>
           setOnboardingForm((prev) => ({
             ...prev,
@@ -40,6 +62,7 @@ function StepOne(formOptions: formType) {
         }
       />
 
+      {/* Description */}
       <Input
         title="Description (optional)"
         value={onboardingForm.description}
@@ -62,12 +85,14 @@ function StepOne(formOptions: formType) {
             return (
               <button
                 key={type.value}
-                onClick={() =>
+                type="button"
+                onClick={() => {
                   setOnboardingForm((prev) => ({
                     ...prev,
                     propertyType: type.value,
-                  }))
-                }
+                  }));
+                  setPriceError(""); // clear price error on change
+                }}
                 className={`px-4 py-2 rounded-lg cursor-pointer border-[2px] text-sm font-medium transition
                   ${
                     isActive
@@ -81,6 +106,23 @@ function StepOne(formOptions: formType) {
           })}
         </div>
       </div>
+
+      {/* Price (Only for Villa & Apartment) */}
+      {shouldAskPrice && (
+        <Input
+          title="Price per night"
+          type="number"
+          value={onboardingForm.price ?? ""}
+          msg={priceError}
+          onFocus={() => setPriceError("")}
+          onChange={(e) =>
+            setOnboardingForm((prev) => ({
+              ...prev,
+              price: e.target.value ? parseFloat(e.target.value) : 0,
+            }))
+          }
+        />
+      )}
 
       {/* Continue */}
       <div className="flex justify-end">
