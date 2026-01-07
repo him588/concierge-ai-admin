@@ -4,7 +4,7 @@ import { AuthToken, MetaData } from "../types/types";
 export class JWTProvider {
   private static accessToken?: string;
   private static userDetails?: AuthToken;
-  private static metaData: MetaData ;
+  private static metaData: MetaData;
 
   private static updateMeta() {
     if (this.accessToken) {
@@ -20,15 +20,15 @@ export class JWTProvider {
     this.updateMeta();
   }
 
-  static getAccessToken(): string | undefined {
+  static get AccessToken(): string | undefined {
     return this.accessToken;
   }
 
-  static getUserDetails(): AuthToken | undefined {
+  static get UserDetails(): AuthToken | undefined {
     return this.userDetails;
   }
 
-  static getMetaData(): MetaData {
+  static get MetaData(): MetaData {
     return this.metaData;
   }
 

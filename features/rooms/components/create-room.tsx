@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useState } from "react";
 
 /* ---------- Hard-coded categories (temporary) ---------- */
 const ROOM_CATEGORIES = [
@@ -22,7 +22,7 @@ function CreateRoom({ accentColor, onCancel }: CreateRoomProps) {
     categoryId: "",
     floor: "",
     amenities: "",
-    images: [] as File[], // ✅ multiple images
+    images: [] as File[],
     isAvailable: true,
   });
 
@@ -93,6 +93,7 @@ function CreateRoom({ accentColor, onCancel }: CreateRoomProps) {
           accept="image/*"
           multiple
           className="file-input file-input-bordered w-full rounded-[10px]"
+          // value={form.images.length}
           onChange={(e) => {
             const files = Array.from(e.target.files || []);
             const remaining = MAX_IMAGES - form.images.length;
@@ -171,7 +172,7 @@ function CreateRoom({ accentColor, onCancel }: CreateRoomProps) {
       <div className="flex justify-end gap-3 pt-4">
         <button
           type="button"
-          className="btn btn-outline border-gray-300 rounded-[10px]"
+          className="btn btn-outline text-black hover:text-white border-gray-300 rounded-[10px]"
           onClick={onCancel}
         >
           Cancel

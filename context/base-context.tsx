@@ -6,7 +6,8 @@ import { JWTProvider } from "@/components/lib/jwt-provider";
 import { REFRESH_TOKEN } from "@/components/types/const";
 import { DynamicConfig } from "@/components/types/types";
 import { refreshAccessToken } from "@/features/auth/api";
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
+import { fetchUserDetails } from "./api";
 
 const BaseContext = createContext(undefined);
 
@@ -17,10 +18,17 @@ export const BaseProvider = ({
   children: React.ReactNode;
   appConfig: DynamicConfig;
 }) => {
+  const [userDetails, setUserDetails] = useState({
+    name: "",
+    email: "",
+    role: "",
+    hotelId: "",
+  });
   AppConfig.set(appConfig);
   useEffect(() => {
+    const refreshToken = CookieProvider.getCookie(REFRESH_TOKEN);
+
     const refresh = async () => {
-      const refreshToken = CookieProvider.getCookie(REFRESH_TOKEN);
       console.log("refresh token value", refreshToken);
       if (!refreshToken) return;
       try {
@@ -28,13 +36,21 @@ export const BaseProvider = ({
         const accessToken = response.data.accessToken;
         JWTProvider.setAccessToken(accessToken);
         ServiceProvider.initializeClient();
+        userDetails();
       } catch (err) {
         console.error("Failed to refresh:", err);
       }
     };
+    async function userDetails() {
+      try {
+        const response = await fetchUserDetails();
+        console.log("userDetails", response?.data);
+      } catch (error) {
+        console.log("Error while fetching user details", error);
+      }
+    }
+
     refresh();
-    const interval = setInterval(refresh, 14 * 60 * 1000);
-    return () => clearInterval(interval);
   }, []);
 
   return (

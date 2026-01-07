@@ -57,12 +57,12 @@ function Room() {
       </div>
 
       {/* Rooms */}
-      <div className="mt-[3rem]">
+      <div className="mt-[3rem] overflow-hidden">
         <RoomList />
       </div>
 
       {/* <RoomAvailabilityTimeline /> */}
-      <div className="mt-[1.5rem]">
+      <div className="mt-[3rem] ">
         <RoomAvailabilityGrid setCurrentModal={setCurrentModal} />
       </div>
 

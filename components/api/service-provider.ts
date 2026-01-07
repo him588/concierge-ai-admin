@@ -14,14 +14,14 @@ class ServiceProvider {
   public static apiClient: AxiosInstance | null = null;
 
   public static initializeClient(): AxiosInstance {
-    console.log("access token",JWTProvider.getMetaData())
+    console.log("access token", JWTProvider.MetaData);
     if (this.apiClient) return this.apiClient;
-    console.log("initialize client")
+    console.log("initialize client");
     const baseURL = `${AppConfig?.env?.ServiceBaseUrl}` || "";
     const client = axios.create({ baseURL, timeout: 30_000 });
     client.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        const accessToken = JWTProvider.getAccessToken();
+        const accessToken = JWTProvider.AccessToken;
         console.log("access token", accessToken);
         if (accessToken) {
           config.headers = config.headers || {};
