@@ -10,7 +10,6 @@ function StepOne(formOptions: formType) {
   const { onboardingForm, setOnboardingForm, setCurrentStep } = formOptions;
 
   const [nameError, setNameError] = useState("");
-  const [priceError, setPriceError] = useState("");
 
   const types: { label: string; value: PropertyType }[] = [
     { label: "Hotel", value: PropertyType.Hotel },
@@ -29,15 +28,6 @@ function StepOne(formOptions: formType) {
     // Name validation
     if (!onboardingForm.name.trim()) {
       setNameError("Property name is required");
-      hasError = true;
-    }
-
-    // Price validation (only for Villa & Apartment)
-    if (
-      shouldAskPrice &&
-      (!onboardingForm.price || onboardingForm.price <= 0)
-    ) {
-      setPriceError("Price is required for Villa and Apartment");
       hasError = true;
     }
 
@@ -91,7 +81,6 @@ function StepOne(formOptions: formType) {
                     ...prev,
                     propertyType: type.value,
                   }));
-                  setPriceError(""); // clear price error on change
                 }}
                 className={`px-4 py-2 rounded-lg cursor-pointer border-[2px] text-sm font-medium transition
                   ${
@@ -106,23 +95,6 @@ function StepOne(formOptions: formType) {
           })}
         </div>
       </div>
-
-      {/* Price (Only for Villa & Apartment) */}
-      {shouldAskPrice && (
-        <Input
-          title="Price per night"
-          type="number"
-          value={onboardingForm.price ?? ""}
-          msg={priceError}
-          onFocus={() => setPriceError("")}
-          onChange={(e) =>
-            setOnboardingForm((prev) => ({
-              ...prev,
-              price: e.target.value ? parseFloat(e.target.value) : 0,
-            }))
-          }
-        />
-      )}
 
       {/* Continue */}
       <div className="flex justify-end">

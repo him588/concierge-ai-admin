@@ -24,7 +24,6 @@ function Onboarding() {
       longitude: 0,
     },
     tags: [],
-    price: 0,
   });
   return (
     <div className="h-full w-full   flex flex-col   py-[2rem] px-[8rem] ">

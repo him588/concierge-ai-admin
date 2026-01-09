@@ -11,6 +11,8 @@ import { JWTProvider } from "@/components/lib/jwt-provider";
 import CookieProvider from "@/components/lib/cookie";
 import { REFRESH_TOKEN } from "@/components/types/const";
 import ServiceProvider from "@/components/api/service-provider";
+import { Cagliostro } from "next/font/google";
+import { useBaseContext } from "@/context/base-context";
 
 type Render = {
   login: boolean;
@@ -19,6 +21,8 @@ type Render = {
 
 function Login({ login, setLogin }: Render) {
   const router = useRouter();
+  const { setUserDetails } = useBaseContext();
+
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
@@ -35,13 +39,27 @@ function Login({ login, setLogin }: Render) {
       if (res.access_token) {
         const response = await googleAuthentication(res.access_token);
         if (response.status === 201 || response.status === 200) {
-          router.push("/onboarding");
+          console.log(response.data);
           CookieProvider.setCookie(REFRESH_TOKEN, response.data.refreshToken, {
             path: "/",
             expires: new Date(Date.now() + 30 * 60 * 1000),
           });
+
           JWTProvider.setAccessToken(response.data.accessToken);
           ServiceProvider.initializeClient();
+          if (response.data.user.hotelId) {
+            router.push("/overview");
+            const userInfo = {
+              name: response.data.user.name,
+              email: response.data.user.email,
+              userId: response.data.user.id,
+              hotelId: response.data.user.user.hotelId,
+              role: response.data.user.role,
+            };
+            setUserDetails(userInfo);
+          } else {
+            router.push("/onboarding");
+          }
         }
       }
     } catch (error) {

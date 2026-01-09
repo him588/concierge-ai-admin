@@ -6,10 +6,11 @@ import { JWTProvider } from "@/components/lib/jwt-provider";
 import { REFRESH_TOKEN } from "@/components/types/const";
 import { DynamicConfig } from "@/components/types/types";
 import { refreshAccessToken } from "@/features/auth/api";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { fetchUserDetails } from "./api";
+import { BaseContextType, UserDetails } from "./types/types";
 
-const BaseContext = createContext(undefined);
+const BaseContext = createContext<undefined | BaseContextType>(undefined);
 
 export const BaseProvider = ({
   children,
@@ -18,12 +19,9 @@ export const BaseProvider = ({
   children: React.ReactNode;
   appConfig: DynamicConfig;
 }) => {
-  const [userDetails, setUserDetails] = useState({
-    name: "",
-    email: "",
-    role: "",
-    hotelId: "",
-  });
+  const [userDetails, setUserDetails] = useState<UserDetails | undefined>(
+    undefined
+  );
   AppConfig.set(appConfig);
   useEffect(() => {
     const refreshToken = CookieProvider.getCookie(REFRESH_TOKEN);
@@ -53,7 +51,27 @@ export const BaseProvider = ({
     refresh();
   }, []);
 
+  useEffect(() => {
+    console.log(userDetails);
+  }, [userDetails]);
+
+  const contextValue = useMemo<BaseContextType>(
+    () => ({
+      userDetails,
+      setUserDetails,
+    }),
+    [userDetails]
+  );
+
   return (
-    <BaseContext.Provider value={undefined}>{children}</BaseContext.Provider>
+    <BaseContext.Provider value={contextValue}>{children}</BaseContext.Provider>
   );
 };
+
+export function useBaseContext() {
+  const context = useContext(BaseContext);
+  if (context === undefined) {
+    throw new Error("useBaseContext must be used within a BaseContextProvider");
+  }
+  return context;
+}

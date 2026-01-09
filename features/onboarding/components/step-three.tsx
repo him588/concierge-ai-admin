@@ -5,6 +5,10 @@ import { ChevronRight, Upload } from "lucide-react";
 import { formType } from "../types/type";
 import ServiceProvider from "@/components/api/service-provider";
 import { useRouter } from "next/navigation";
+import CookieProvider from "@/components/lib/cookie";
+import { JWTProvider } from "@/components/lib/jwt-provider";
+import { REFRESH_TOKEN } from "@/components/types/const";
+import { useBaseContext } from "@/context/base-context";
 
 const AMENITIES = [
   "WiFi",
@@ -23,6 +27,7 @@ function StepThree(formOptions: formType) {
   const MAX_FILES = 5;
 
   const { setCurrentStep, onboardingForm, setOnboardingForm } = formOptions;
+  const { setUserDetails, userDetails } = useBaseContext();
   const [images, setImages] = useState<File[]>([]);
   const [imageError, setImageError] = useState("");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
@@ -85,8 +90,21 @@ function StepThree(formOptions: formType) {
       formdata
     );
 
+    console.log(response?.data);
+
     if (response?.data) {
+      CookieProvider.setCookie(REFRESH_TOKEN, response.data.refreshToken, {
+        path: "/",
+        expires: new Date(Date.now() + 30 * 60 * 1000),
+      });
+
+      JWTProvider.setAccessToken(response.data.accessToken);
       router.push("/overview");
+      setUserDetails((prev) => {
+        if (!prev) return prev;
+        const updatedDetails = { ...prev, hotelId: response.data._id };
+        return updatedDetails;
+      });
     }
   }
 
