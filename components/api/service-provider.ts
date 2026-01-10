@@ -5,10 +5,13 @@ import axios, {
   AxiosResponse,
   AxiosError,
 } from "axios";
-import AppConfig from "../lib/app-config";
-import CookieProvider from "../lib/cookie";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../types/const";
-import { JWTProvider } from "../lib/jwt-provider";
+import AppConfig from "@/components/lib/app-config";
+import CookieProvider from "@/components/lib/cookie";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/components/types/const";
+import { JWTProvider } from "@/components/lib/jwt-provider";
+import { refreshToken } from "@/components/api/api";
+
+let isRefreshing = false;
 
 class ServiceProvider {
   public static apiClient: AxiosInstance | null = null;
@@ -23,6 +26,16 @@ class ServiceProvider {
       (config: InternalAxiosRequestConfig) => {
         const accessToken = JWTProvider.AccessToken;
         console.log("access token", accessToken);
+
+        // 🧠 If token expires in < 5 min → refresh
+        if (JWTProvider.isAccessTokenExpiringSoon(5)) {
+          if (!isRefreshing) {
+            isRefreshing = true;
+            refreshToken().finally(() => {
+              isRefreshing = false;
+            });
+          }
+        }
         if (accessToken) {
           config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${accessToken}`;

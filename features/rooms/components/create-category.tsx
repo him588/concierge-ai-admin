@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { useCreateRoomType } from "@/components/hooks/use-room-type";
 import { useBaseContext } from "@/context/base-context";
+import { AxiosError } from "axios";
 
 interface CreateCategoryProps {
   accentColor: string;
@@ -31,9 +32,10 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { userDetails } = useBaseContext();
+  const [errorMsg, setErrorMsg] = useState("");
 
   const {
-    mutate: createRoomType,
+    mutateAsync: createRoomType,
     isError,
     isPending,
     isSuccess,
@@ -43,11 +45,15 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
     if (isSuccess) {
       const timer = setTimeout(() => {
         onCancel?.();
-      }, 800); // smooth UX, user sees success screen
+      }, 1500); // smooth UX, user sees success screen
 
       return () => clearTimeout(timer);
     }
   }, [isSuccess, onCancel]);
+
+  // useEffect(()=>{
+  //   console.log(object)
+  // },[isError])
 
   /* ---------------- VALIDATION ---------------- */
 
@@ -67,7 +73,7 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
 
   /* ---------------- SUBMIT ---------------- */
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateForm()) return;
 
     const payload = {
@@ -84,8 +90,21 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
 
     console.log("VALID PAYLOAD →", payload);
     if (userDetails?.hotelId) {
-      const response = createRoomType(payload);
-      console.log(response);
+      try {
+        const response = await createRoomType(payload); // 2xx only
+        console.log("SUCCESS →", response);
+      } catch (error: any) {
+        console.log("RAW ERROR →", error);
+
+        const apiError = error?.response?.data; // 👈 400, 409, 422 yahin hota hai
+
+        console.log("API ERROR →", apiError);
+
+        if (apiError?.message) {
+          setErrorMsg(apiError.message);
+          setTimeout(() => setErrorMsg(""), 2000);
+        }
+      }
     }
   };
 
@@ -93,6 +112,17 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
     <div className="space-y-6">
       {!isSuccess ? (
         <>
+          {/* Error */}
+
+          {errorMsg.trim().length > 0 && (
+            <div
+              role="alert"
+              className="alert bg-[#fff3f4] outline-none border-none alert-error alert-soft"
+            >
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
           {/* Title */}
           <h2
             className="text-xl text-center text-black font-semibold"

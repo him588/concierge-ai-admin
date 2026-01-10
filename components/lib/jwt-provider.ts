@@ -32,6 +32,22 @@ export class JWTProvider {
     return this.metaData;
   }
 
+  static isAccessTokenExpiringSoon(minutes = 5): boolean {
+    const token = this.AccessToken;
+    if (!token) return true;
+
+    try {
+      const decoded = decodeJwtToken(token);
+      const exp = decoded.exp * 1000;
+      const now = Date.now();
+
+      const remaining = exp - now;
+      return remaining < minutes * 60 * 1000; // < 5 min
+    } catch {
+      return true;
+    }
+  }
+
   static clear() {
     this.accessToken = undefined;
     this.userDetails = undefined;

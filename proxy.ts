@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { decodeJwtToken } from "./components/helper/helper";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const refreshToken = request.cookies.get("refreshToken")?.value;
