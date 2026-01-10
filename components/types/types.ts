@@ -26,3 +26,12 @@ export type MetaData = {
   Authorization: string;
   [x: string]: string;
 };
+
+export interface CreateRoomTypePayload {
+  type: string;
+  price: number;
+  maxGuest: number;
+  image: string;
+  isShared: boolean;
+  tags: string[];
+}

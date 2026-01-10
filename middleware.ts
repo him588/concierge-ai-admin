@@ -3,18 +3,32 @@ import { decodeJwtToken } from "./components/helper/helper";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isLoggedIn = request.cookies.get("refreshToken")?.value;
-  const tokenValue = isLoggedIn ? decodeJwtToken(isLoggedIn) : "";
-  console.log(tokenValue);
 
-  if (
-    isLoggedIn &&
-    (pathname.includes("/login") ||
-      pathname.includes("/onboarding") ||
-      pathname === "/") &&
-    tokenValue.hotelId
-  ) {
-    return NextResponse.redirect(new URL("/overview", request.url));
+  const refreshToken = request.cookies.get("refreshToken")?.value;
+  const token = refreshToken ? decodeJwtToken(refreshToken) : null;
+
+  const isLoginPage = pathname === "/" || pathname.startsWith("/login");
+
+  const isOnboardingPage = pathname.startsWith("/onboarding");
+
+  // 1️⃣ No token → only login allowed
+  if (!refreshToken && !isLoginPage) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // 2️⃣ Token exists but onboarding NOT done
+  if (refreshToken && !token?.hotelId) {
+    if (!isOnboardingPage) {
+      return NextResponse.redirect(new URL("/onboarding", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // 3️⃣ Token exists & onboarding done → block login & onboarding
+  if (refreshToken && token?.hotelId) {
+    if (isLoginPage || isOnboardingPage) {
+      return NextResponse.redirect(new URL("/overview", request.url));
+    }
   }
 
   return NextResponse.next();

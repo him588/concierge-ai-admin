@@ -27,8 +27,9 @@ export const BaseProvider = ({
     const refreshToken = CookieProvider.getCookie(REFRESH_TOKEN);
 
     const refresh = async () => {
-      console.log("refresh token value", refreshToken);
       if (!refreshToken) return;
+      console.log("refresh token value", refreshToken);
+
       try {
         const response = await refreshAccessToken(refreshToken);
         const accessToken = response.data.accessToken;
@@ -42,6 +43,7 @@ export const BaseProvider = ({
     async function userDetails() {
       try {
         const response = await fetchUserDetails();
+        setUserDetails({ ...response?.data.user });
         console.log("userDetails", response?.data);
       } catch (error) {
         console.log("Error while fetching user details", error);
@@ -50,10 +52,6 @@ export const BaseProvider = ({
 
     refresh();
   }, []);
-
-  useEffect(() => {
-    console.log(userDetails);
-  }, [userDetails]);
 
   const contextValue = useMemo<BaseContextType>(
     () => ({

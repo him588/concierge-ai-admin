@@ -95,7 +95,7 @@ function StepThree(formOptions: formType) {
     if (response?.data) {
       CookieProvider.setCookie(REFRESH_TOKEN, response.data.refreshToken, {
         path: "/",
-        expires: new Date(Date.now() + 30 * 60 * 1000),
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       });
 
       JWTProvider.setAccessToken(response.data.accessToken);

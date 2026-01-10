@@ -1,6 +1,7 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { BaseProvider } from "@/context/base-context";
+import Providers from "@/context/query-provider";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -21,9 +22,11 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <BaseProvider appConfig={appConfig}>
-        <body className={`${poppins.variable}`}>{children}</body>
-      </BaseProvider>
+      <Providers>
+        <BaseProvider appConfig={appConfig}>
+          <body className={`${poppins.variable}`}>{children}</body>
+        </BaseProvider>
+      </Providers>
     </html>
   );
 }
