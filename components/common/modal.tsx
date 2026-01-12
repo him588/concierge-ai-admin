@@ -38,7 +38,7 @@ function Modal({
       <div
         onClick={(e) => e.stopPropagation()}
         className={twMerge(
-          "modal-box bg-white  h-fit  max-h-[90%] w-[50%] relative",
+          "modal-box bg-white  h-fit  max-h-[90%]  relative",
           modalBoxClassName
         )}
       >

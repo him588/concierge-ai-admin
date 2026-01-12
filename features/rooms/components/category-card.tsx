@@ -1,19 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Users, IndianRupee } from "lucide-react";
-
-interface RoomCategory {
-  id: string;
-  type: string;
-  price: number;
-  maxGuest: number;
-  image: string;
-  isShared: boolean;
-}
+import { RoomCategoryType } from "@/components/types/types";
+import { Users } from "lucide-react";
 
 interface RoomCategoryListCardProps {
-  category: RoomCategory;
+  category: RoomCategoryType;
   accentColor: string;
   onClick?: () => void;
 }

@@ -3,9 +3,9 @@
 
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
-import { useCreateRoomType } from "@/components/hooks/use-room-type";
-import { useBaseContext } from "@/context/base-context";
+import { useCreateRoomType } from "@/components/hooks/use-api";
 import { AxiosError } from "axios";
+import { useBaseContext } from "@/context/base-context";
 
 interface CreateCategoryProps {
   accentColor: string;
@@ -29,34 +29,48 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
     tags: "",
     isShared: false,
   });
-
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { userDetails } = useBaseContext();
-  const [errorMsg, setErrorMsg] = useState("");
+  const { setAlert } = useBaseContext();
 
   const {
     mutateAsync: createRoomType,
-    isError,
     isPending,
     isSuccess,
+    isError,
+    error,
+    data,
   } = useCreateRoomType();
 
+  /* ---------------- API Error ---------------- */
+
+  /* ---------------- Auto close on success ---------------- */
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
         onCancel?.();
-      }, 1500); // smooth UX, user sees success screen
-
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [isSuccess, onCancel]);
 
-  // useEffect(()=>{
-  //   console.log(object)
-  // },[isError])
+  useEffect(() => {
+    const apiError = (error as AxiosError<{ message: string }>)?.response?.data;
 
-  /* ---------------- VALIDATION ---------------- */
+    if (isError && apiError?.message) {
+      const timer = setTimeout(() => {
+        setAlert(apiError.message);
+        onCancel?.();
+        const clearTimer = setTimeout(() => {
+          setAlert("");
+        }, 3000);
+        return () => clearTimeout(clearTimer);
+      }, 0);
 
+      return () => clearTimeout(timer);
+    }
+  }, [isError, error, onCancel, setAlert]);
+
+  /* ---------------- Validation ---------------- */
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -71,9 +85,8 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  /* ---------------- SUBMIT ---------------- */
-
-  const handleSubmit = async () => {
+  /* ---------------- Submit ---------------- */
+  const handleSubmit = () => {
     if (!validateForm()) return;
 
     const payload = {
@@ -88,40 +101,14 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
         .filter(Boolean),
     };
 
-    console.log("VALID PAYLOAD →", payload);
-    if (userDetails?.hotelId) {
-      try {
-        const response = await createRoomType(payload); // 2xx only
-        console.log("SUCCESS →", response);
-      } catch (error: any) {
-        console.log("RAW ERROR →", error);
-
-        const apiError = error?.response?.data; // 👈 400, 409, 422 yahin hota hai
-
-        console.log("API ERROR →", apiError);
-
-        if (apiError?.message) {
-          setErrorMsg(apiError.message);
-          setTimeout(() => setErrorMsg(""), 2000);
-        }
-      }
-    }
+    createRoomType(payload);
   };
 
   return (
     <div className="space-y-6">
       {!isSuccess ? (
         <>
-          {/* Error */}
-
-          {errorMsg.trim().length > 0 && (
-            <div
-              role="alert"
-              className="alert bg-[#fff3f4] outline-none border-none alert-error alert-soft"
-            >
-              <span>{errorMsg}</span>
-            </div>
-          )}
+          {/* API Error (same alert UI) */}
 
           {/* Title */}
           <h2
@@ -132,7 +119,7 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
           </h2>
 
           {/* Form Fields */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <Input
                 label="Category Name"
@@ -218,11 +205,11 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
                       setErrors({ ...errors, image: "" });
                     }}
                     className={`relative rounded-lg overflow-hidden border-2 transition
-                  ${
-                    isSelected
-                      ? "border-transparent"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
+                      ${
+                        isSelected
+                          ? "border-transparent"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
                     style={
                       isSelected
                         ? { boxShadow: `0 0 0 2px ${accentColor}` }
@@ -266,7 +253,7 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
-              className="btn btn-outline border-gray-300 rounded-[10px] text-gray-700 hover:bg-gray-100"
+              className="btn bg-transparent input-bordered  shadow-lg   rounded-[10px] text-gray-700  hover:bg-black hover:text-white"
               onClick={onCancel}
             >
               Cancel
@@ -275,30 +262,21 @@ function CreateCategory({ accentColor, onCancel }: CreateCategoryProps) {
             <button
               type="button"
               onClick={handleSubmit}
-              // disabled={isPending}
-              className={`btn text-white rounded-[10px] border-none hover:opacity-90 `}
+              className="btn text-white rounded-[10px] bg-black shadow-lg border-none hover:opacity-80"
               style={{ backgroundColor: accentColor }}
             >
-              {isPending ? (
-                <span className="loading loading-spinner loading-lg "></span>
-              ) : (
-                ""
+              {isPending && (
+                <span className="loading loading-spinner loading-sm"></span>
               )}
-              {/* <span className="loading loading-spinner loading-lg "></span> */}
               Create Category
             </button>
           </div>
         </>
       ) : (
         <>
-          <img
-            alt=""
-            src={
-              "https://cdn.dribbble.com/userupload/45210442/file/93c8f2d6e3e3ce159763696ab94803e2.jpg?resize=1600x1200&vertical=center"
-            }
-          />
-          <p className=" text-center text-xl text-[#fe69b5] font-semibold -mt-[15px]">
-            Room Created SuccessFully
+          <img alt="" src="/success.webp" />
+          <p className="text-center text-xl text-[#fe69b5] font-semibold -mt-[15px]">
+            Room Category Created SuccessFully
           </p>
         </>
       )}

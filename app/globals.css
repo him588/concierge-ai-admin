@@ -1,7 +1,9 @@
 @import "tailwindcss";
 @import "tailwindcss";
 @import "tailwind-scrollbar-hide/v4";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: light --default;
+}
 
 :root {
   --background: #ffffff;

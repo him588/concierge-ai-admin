@@ -11,4 +11,6 @@ export type UserDetails = {
 export type BaseContextType = {
   userDetails: UserDetails | undefined;
   setUserDetails: React.Dispatch<React.SetStateAction<UserDetails | undefined>>;
+  alert: string;
+  setAlert: React.Dispatch<React.SetStateAction<string>>;
 };

@@ -70,7 +70,7 @@ function Room() {
         <Modal
           isOpen={currentModal !== null}
           onClose={() => setCurrentModal(null)}
-          modalBoxClassName=" rounded-[25px]"
+          modalBoxClassName=" rounded-[25px] w-[100%] "
         >
           {currentModal === "createCategory" && (
             <CreateCategory

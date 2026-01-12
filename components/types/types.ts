@@ -35,3 +35,21 @@ export interface CreateRoomTypePayload {
   isShared: boolean;
   tags: string[];
 }
+
+export interface RoomCategoryType {
+  _id: string;
+  type: string;
+  price: number;
+  maxGuest: number;
+  image: string;
+  isShared: boolean;
+}
+
+export interface CreateRoom {
+  roomNumber: string;
+  categoryId: string;
+  floor: string;
+  amenities: string;
+  images: File[];
+  isAvailable: boolean;
+}
