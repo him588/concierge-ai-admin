@@ -1,3 +1,4 @@
+import Header from "@/components/common/header";
 import Sidebar from "@/components/common/sidebar";
 import React from "react";
 
@@ -12,6 +13,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         <Sidebar />
       </div>
       <div className="w-[80%] pt-[2rem] pr-[2rem] scrollbar-hide overflow-y-scroll ">
+        <Header/>
         {children}
       </div>
     </div>

@@ -8,8 +8,7 @@ import Header from "@/components/common/header";
 
 function Overview() {
   return (
-    <section className="w-full h-full outline-none    gap-[2.5rem]">
-      <Header />
+    <section className="w-full h-full outline-none ">
       <div className="w-full flex gap-[2.5rem]">
         <div className=" w-[70%] ">
           <OverviewSection />

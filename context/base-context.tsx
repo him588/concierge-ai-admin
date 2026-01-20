@@ -21,7 +21,7 @@ export const BaseProvider = ({
   appConfig: DynamicConfig;
 }) => {
   const [userDetails, setUserDetails] = useState<UserDetails | undefined>(
-    undefined
+    undefined,
   );
   const [isauthReady, setIsAuthReady] = useState(false);
   const [alert, setAlert] = useState("");
@@ -69,7 +69,7 @@ export const BaseProvider = ({
       alert,
       setAlert,
     }),
-    [userDetails, alert]
+    [userDetails, alert],
   );
 
   return (

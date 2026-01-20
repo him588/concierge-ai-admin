@@ -12,7 +12,7 @@ export async function refreshToken() {
     `${AppConfig.env.ServiceBaseUrl}/auth/refresh-accesstoken`,
     {
       refreshToken: refresh,
-    }
+    },
   );
   const { accessToken } = res.data;
   JWTProvider.setAccessToken(accessToken);
@@ -24,7 +24,7 @@ export async function createRoomType(roomType: CreateRoomTypePayload) {
     { ...roomType },
     {
       headers: { ...JWTProvider.MetaData },
-    }
+    },
   );
 }
 
@@ -39,6 +39,34 @@ export async function createRoom(formData: FormData) {
     headers: {
       ...JWTProvider.MetaData,
       "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
+export async function getRooms(hotelId?: string) {
+  return ServiceProvider.apiClient?.get(
+    `/room/get-rooms?id=${hotelId ? hotelId : ""}`,
+    {
+      headers: {
+        ...JWTProvider.MetaData,
+      },
+    },
+  );
+}
+
+export async function getServicesInfo() {
+  const res = ServiceProvider.apiClient?.get("/services", {
+    headers: {
+      ...JWTProvider.MetaData,
+    },
+  });
+  return res;
+}
+
+export async function getStaffInfo() {
+  return ServiceProvider.apiClient?.get("/staff", {
+    headers: {
+      ...JWTProvider.MetaData,
     },
   });
 }

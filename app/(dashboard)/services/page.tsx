@@ -1,7 +1,8 @@
+import Services from "@/features/services/services";
 import React from "react";
 
 function Page() {
-  return <div></div>;
+  return <Services/>;
 }
 
 export default Page;

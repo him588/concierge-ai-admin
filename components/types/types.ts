@@ -53,3 +53,13 @@ export interface CreateRoom {
   images: File[];
   isAvailable: boolean;
 }
+
+export interface Room {
+  id: string;
+  roomNumber: string;
+  category: string;
+  floor: string;
+  images: string[];
+  maxGuest: number;
+  status: "available" | "booked" | "maintenance";
+}

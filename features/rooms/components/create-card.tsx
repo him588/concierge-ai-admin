@@ -1,4 +1,5 @@
 import { LucideIcon } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 
 type CreateCardProps = {
   title: string;
@@ -7,6 +8,7 @@ type CreateCardProps = {
   accentColor: string;
   backgroundColor: string;
   onClick?: () => void;
+  className?: string;
 };
 
 export default function CreateCard({
@@ -16,6 +18,7 @@ export default function CreateCard({
   accentColor,
   backgroundColor,
   onClick,
+  className,
 }: CreateCardProps) {
   return (
     <div
@@ -23,11 +26,14 @@ export default function CreateCard({
       tabIndex={0}
       onClick={onClick}
       onKeyDown={(e) => e.key === "Enter" && onClick?.()}
-      className="group flex h-48  w-[33%]  cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed
-        transition-all duration-300
-        hover:-translate-y-1 hover:shadow-md
-        active:translate-y-0 active:shadow-sm
-        focus:outline-none focus:ring-2 focus:ring-offset-2"
+      className={twMerge(
+        "group flex h-48 w-[33%] cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed",
+        "transition-all duration-300",
+        "hover:-translate-y-1 hover:shadow-md",
+        "active:translate-y-0 active:shadow-sm",
+        "focus:outline-none focus:ring-2 focus:ring-offset-2",
+        className,
+      )}
       style={{
         borderColor: accentColor,
         backgroundColor,

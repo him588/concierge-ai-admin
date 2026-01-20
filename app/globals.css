@@ -75,6 +75,38 @@ body {
   box-shadow: -5px -5px 0 5px #f3f4fb;
 }
 
+.service .box .icon {
+  position: absolute;
+  width: 150px;
+  height: 100px;
+  background-color: #f3f4fb;
+  border-bottom-right-radius: 50px;
+}
+
+.service .box .icon::before {
+  content: "";
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border-top-left-radius: 30px;
+  box-shadow: -5px -5px 0 5px #f3f4fb;
+}
+
+.service .box .icon::after {
+  content: "";
+  position: absolute;
+  top: 0px;
+  right: -30px;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border-top-left-radius: 30px;
+  box-shadow: -5px -5px 0 5px #f3f4fb;
+}
+
 @keyframes spin-slow {
   from {
     transform: rotate(0deg);

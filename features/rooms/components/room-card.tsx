@@ -15,8 +15,7 @@ interface Room {
   floor: string;
   images: string[];
   maxGuest: number;
-  isAvailable: boolean;
-  isUnderMaintenance: boolean;
+  status: "available" | "booked" | "maintenance";
 }
 
 interface RoomCardProps {
@@ -32,11 +31,12 @@ export function RoomCard({
   onClick,
   onToggleMaintenance,
 }: RoomCardProps) {
-  const status = room.isUnderMaintenance
-    ? "maintenance"
-    : room.isAvailable
-    ? "available"
-    : "unavailable";
+  const status =
+    room.status === "maintenance"
+      ? "maintenance"
+      : room.status === "available"
+      ? "available"
+      : "unavailable";
 
   return (
     <div

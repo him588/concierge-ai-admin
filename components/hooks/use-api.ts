@@ -1,5 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createRoom, createRoomType, getRoomTypes } from "@/components/api/api";
+import {
+  createRoom,
+  createRoomType,
+  getRooms,
+  getRoomTypes,
+  getServicesInfo,
+  getStaffInfo,
+} from "@/components/api/api";
 import { CreateRoomTypePayload } from "../types/types";
 
 export const useGetRoomTypes = () => {
@@ -26,7 +33,28 @@ export const useCreateRoom = () => {
   return useMutation({
     mutationFn: (formData: FormData) => createRoom(formData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["room"] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
     },
+  });
+};
+
+export const useGetRooms = () => {
+  return useQuery({
+    queryKey: ["rooms"],
+    queryFn: () => getRooms(),
+  });
+};
+
+export const useGetServices = () => {
+  return useQuery({
+    queryKey: ["services"],
+    queryFn: () => getServicesInfo(),
+  });
+};
+
+export const useGetStaff = () => {
+  return useQuery({
+    queryKey: ["staff"],
+    queryFn: () => getStaffInfo(),
   });
 };

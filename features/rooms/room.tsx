@@ -19,10 +19,8 @@ function Room() {
 
   return (
     <section className="w-full h-full outline-none p-6">
-      <Header />
-
       {/* Create Cards */}
-      <div className="mt-[1rem] flex  gap-[1rem]">
+      <div className=" flex  gap-[1rem]">
         <CreateCard
           title="Create room type"
           description="Add a new room category"

@@ -14,3 +14,8 @@ export type BaseContextType = {
   alert: string;
   setAlert: React.Dispatch<React.SetStateAction<string>>;
 };
+
+export type ServiceContextType = {
+  activeTab: "Services" | "Staff";
+  setActiveTab: React.Dispatch<React.SetStateAction<"Services" | "Staff">>;
+};
