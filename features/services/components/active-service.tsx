@@ -4,6 +4,8 @@ import { Users, Layers, Wrench } from "lucide-react";
 import CreateCard from "@/features/rooms/components/create-card";
 import RecentServices from "./recent-services";
 import { useRouter } from "next/navigation";
+import Modal from "@/components/common/modal";
+import CreateService from "./create-service";
 
 export interface Services {
   id: string;
@@ -76,6 +78,7 @@ function ActiveService() {
   const dropDown = ["Active", "Inactive"] as const;
   const [filter, setFilter] = useState<"Active" | "Inactive">("Active");
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
 
   const filteredServices = useMemo(
     () => services.filter((service) => service.status === filter),
@@ -106,7 +109,7 @@ function ActiveService() {
             icon={Wrench}
             accentColor="#4c6edb"
             backgroundColor="#eef3ff"
-            onClick={() => console.log("hello")}
+            onClick={() => setShowModal(true)}
             className="h-[150px] w-full"
           />
 
@@ -178,6 +181,17 @@ function ActiveService() {
           ))}
         </div>
       </div>
+      {showModal && (
+        <Modal
+          modalBoxClassName=" w-[380px] rounded-[1.6rem] p-[.5rem]"
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          title="Create Service"
+          titleClass="text-center text-[#1c1d4e] text-[1.4rem] font-semibold"
+        >
+          <CreateService />
+        </Modal>
+      )}
 
       <RecentServices />
     </div>

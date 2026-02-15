@@ -1,13 +1,20 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  bookRoom,
   createRoom,
   createRoomType,
   getRooms,
+  getRoomStatus,
   getRoomTypes,
   getServicesInfo,
   getStaffInfo,
 } from "@/components/api/api";
-import { CreateRoomTypePayload } from "../types/types";
+import { BookRoomPlayload, CreateRoomTypePayload } from "../types/types";
 
 export const useGetRoomTypes = () => {
   return useQuery({
@@ -34,6 +41,7 @@ export const useCreateRoom = () => {
     mutationFn: (formData: FormData) => createRoom(formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["room-status"] }); // ✅ add this
     },
   });
 };
@@ -56,5 +64,35 @@ export const useGetStaff = () => {
   return useQuery({
     queryKey: ["staff"],
     queryFn: () => getStaffInfo(),
+  });
+};
+
+export const useBookRoom = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (bookingData: BookRoomPlayload) => bookRoom(bookingData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+    },
+  });
+};
+
+export const useRoomBooking = () => {
+  return useQuery({
+    queryKey: ["room-status"],
+    queryFn: () => getRoomStatus(),
+  });
+};
+
+export const useCreateServices = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => {},
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["services"] });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
+    },
   });
 };

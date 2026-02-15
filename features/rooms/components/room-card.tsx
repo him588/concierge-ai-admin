@@ -35,8 +35,8 @@ export function RoomCard({
     room.status === "maintenance"
       ? "maintenance"
       : room.status === "available"
-      ? "available"
-      : "unavailable";
+        ? "available"
+        : "unavailable";
 
   return (
     <div
@@ -67,50 +67,14 @@ export function RoomCard({
       </Swiper>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-2">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">
             Room {room.roomNumber}
           </h3>
 
-          <div className=" flex gap-[1rem]">
-            <div>
-              {status === "maintenance" && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-700">
-                  <Wrench size={12} />
-                  Under Mainten..
-                </span>
-              )}
-
-              {status === "available" && (
-                <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-                  Available
-                </span>
-              )}
-
-              {status === "unavailable" && (
-                <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
-                  Unavailable
-                </span>
-              )}
-            </div>
-            <div
-              className="tooltip tooltip-top "
-              data-tip="Mark room as under maintenance"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <input
-                type="checkbox"
-                className="toggle toggle-bg-green-500 toggle-error toggle-md shadow-lg
-               bg-green-100 checked:bg-red-100   text-green-400 checked:text-red-500   "
-                onChange={(e) => {
-                  e.stopPropagation();
-                  onToggleMaintenance?.(room.id, e.target.checked);
-                }}
-              />
-            </div>
-          </div>
+          <div className=" flex gap-[1rem]"></div>
         </div>
 
         <div className="flex items-center gap-4 text-sm text-gray-600">
@@ -124,10 +88,25 @@ export function RoomCard({
             Max {room.maxGuest}
           </div>
         </div>
+        <div className=" flex items-center justify-between">
+          <p className="text-sm font-medium" style={{ color: accentColor }}>
+            {room.category}
+          </p>
+          <div>
+            {status === "maintenance" && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
+                <Wrench size={12} />
+                Under Mainten..
+              </span>
+            )}
 
-        <p className="text-sm font-medium" style={{ color: accentColor }}>
-          {room.category}
-        </p>
+            {status === "available" && (
+              <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                Available
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

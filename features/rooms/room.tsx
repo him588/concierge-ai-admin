@@ -16,6 +16,7 @@ function Room() {
   const [currentModal, setCurrentModal] = useState<
     null | "createCategory" | "createRoom" | "BookRoom"
   >(null);
+  console.log(new Date());
 
   return (
     <section className="w-full h-full outline-none p-6">

@@ -63,3 +63,21 @@ export interface Room {
   maxGuest: number;
   status: "available" | "booked" | "maintenance";
 }
+
+export interface BookRoomPlayload {
+  guestName: string;
+  phone: string;
+  email: string;
+  categoryId: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+}
+
+export interface Services {
+  id?: string;
+  name: string;
+  description: string;
+  color: string;
+  isActive: boolean;
+}

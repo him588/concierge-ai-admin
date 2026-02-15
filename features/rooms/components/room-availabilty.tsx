@@ -1,5 +1,6 @@
 "use client";
 
+import { useRoomBooking } from "@/components/hooks/use-api";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 
 interface Room {
@@ -15,34 +16,44 @@ type props = {
   >;
 };
 
-/* ---------- Mock Rooms ---------- */
-const ROOMS: Room[] = [
-  { id: "1", number: "101", category: "Standard", status: "available" },
-  { id: "2", number: "102", category: "Standard", status: "booked" },
-  { id: "3", number: "103", category: "Standard", status: "checked_in" },
-  { id: "4", number: "104", category: "Standard", status: "available" },
-  { id: "5", number: "105", category: "Standard", status: "maintenance" },
-
-  { id: "6", number: "201", category: "Deluxe", status: "available" },
-  { id: "7", number: "202", category: "Deluxe", status: "booked" },
-  { id: "8", number: "203", category: "Deluxe", status: "checked_in" },
-  { id: "9", number: "204", category: "Deluxe", status: "available" },
-  { id: "10", number: "205", category: "Deluxe", status: "maintenance" },
-
-  { id: "11", number: "301", category: "Suite", status: "available" },
-  { id: "12", number: "302", category: "Suite", status: "booked" },
-  { id: "13", number: "303", category: "Suite", status: "checked_in" },
-  { id: "14", number: "304", category: "Suite", status: "available" },
-  { id: "15", number: "305", category: "Suite", status: "maintenance" },
-];
-
 function RoomAvailabilityGrid(props: props) {
   const { setCurrentModal } = props;
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("All");
 
+  const { data } = useRoomBooking();
+
+  /* ---------- Transform API Data ---------- */
+  const rooms: Room[] = useMemo(() => {
+    if (!data?.data) return [];
+
+    return data.data.rooms.map(
+      (room: {
+        roomId?: string;
+        roomNo: string;
+        roomType: string;
+        status: string;
+        daysRemaining: number;
+      }) => ({
+        id: room.roomId?.toString(),
+        number: room.roomNo,
+        category: room.roomType,
+        status:
+          room.status === "occupied"
+            ? "checked_in"
+            : room.status === "booked"
+              ? "booked"
+              : room.status === "maintenance"
+                ? "maintenance"
+                : "available",
+        daysRemaining: room.daysRemaining,
+      }),
+    );
+  }, [data]);
+
+  /* ---------- Filtering ---------- */
   const filteredRooms = useMemo(() => {
-    return ROOMS.filter((room) => {
+    return rooms.filter((room) => {
       const statusMatch =
         statusFilter === "all" || room.status === statusFilter;
 
@@ -51,20 +62,19 @@ function RoomAvailabilityGrid(props: props) {
 
       return statusMatch && categoryMatch;
     });
-  }, [statusFilter, categoryFilter]);
+  }, [rooms, statusFilter, categoryFilter]);
 
   return (
     <div className="space-y-4">
-      {/* Header + Filters */}
-      {/* Header + Filters */}
+      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-lg font-semibold text-gray-800">
           Room Availability
         </h2>
 
+        {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
-          {/* Status Filter Pills */}
-          <div className="flex rounded-xl  gap-1">
+          <div className="flex rounded-xl gap-1">
             {[
               {
                 key: "all",
@@ -76,11 +86,7 @@ function RoomAvailabilityGrid(props: props) {
                 label: "Available",
                 styles: "border-green-300 bg-green-50 text-green-700",
               },
-              {
-                key: "booked",
-                label: "Booked",
-                styles: "border-blue-300 bg-blue-50 text-blue-700",
-              },
+
               {
                 key: "checked_in",
                 label: "Checked In",
@@ -98,15 +104,13 @@ function RoomAvailabilityGrid(props: props) {
                 <button
                   key={item.key}
                   onClick={() => setStatusFilter(item.key)}
-                  className={`
-          rounded-lg px-3 py-1 cursor-pointer text-xs font-medium border transition
-          ${item.styles}
-          ${
-            active
-              ? "shadow-sm ring-1 ring-black/5"
-              : "opacity-70 hover:opacity-100"
-          }
-        `}
+                  className={`rounded-lg px-3 py-1 cursor-pointer text-xs font-medium border transition
+                  ${item.styles}
+                  ${
+                    active
+                      ? "shadow-sm ring-1 ring-black/5"
+                      : "opacity-70 hover:opacity-100"
+                  }`}
                 >
                   {item.label}
                 </button>
@@ -132,7 +136,7 @@ function RoomAvailabilityGrid(props: props) {
             {/* Status Dot */}
             <span
               className={`absolute right-3 top-3 h-3 w-3 rounded-full ${getDot(
-                room.status
+                room.status,
               )}`}
             />
 
@@ -144,7 +148,7 @@ function RoomAvailabilityGrid(props: props) {
 
             <p
               className={`mt-2 inline-block rounded-full px-2 py-[2px] text-xs font-medium ${getBadge(
-                room.status
+                room.status,
               )}`}
             >
               {formatStatus(room.status)}

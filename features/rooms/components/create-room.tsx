@@ -77,6 +77,7 @@ function CreateRoom({ accentColor, onCancel }: CreateRoomProps) {
     formData.append("floor", form.floor);
     formData.append("amenities", form.amenities);
     formData.append("isAvailable", String(form.isAvailable));
+    formData.append("status", form.isAvailable ? "available" : "maintenance");
 
     form.images.forEach((file) => {
       formData.append("images", file);

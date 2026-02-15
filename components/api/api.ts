@@ -1,6 +1,10 @@
 import ServiceProvider from "@/components/api/service-provider";
 import { JWTProvider } from "@/components/lib/jwt-provider";
-import { CreateRoom, CreateRoomTypePayload } from "../types/types";
+import {
+  BookRoomPlayload,
+  CreateRoom,
+  CreateRoomTypePayload,
+} from "../types/types";
 import axios from "axios";
 import AppConfig from "../lib/app-config";
 import CookieProvider from "../lib/cookie";
@@ -70,3 +74,39 @@ export async function getStaffInfo() {
     },
   });
 }
+
+export async function bookRoom(bookingData: BookRoomPlayload) {
+  return ServiceProvider.apiClient?.post(
+    "/room-bookings",
+    { ...bookingData },
+    {
+      headers: {
+        ...JWTProvider.MetaData,
+      },
+    },
+  );
+}
+
+export async function getRoomStatus() {
+  return ServiceProvider.apiClient?.get("/room/get-room-status", {
+    headers: {
+      ...JWTProvider.MetaData,
+    },
+  });
+}
+
+export async function createService() {
+  return ServiceProvider.apiClient?.get("/room/get-room-status", {
+    headers: {
+      ...JWTProvider.MetaData,
+    },
+  });
+}
+
+// export async function getRoomBookings() {
+//   return ServiceProvider.apiClient?.get("/room-bookings/", {
+//     headers: {
+//       ...JWTProvider.MetaData,
+//     },
+//   });
+// }

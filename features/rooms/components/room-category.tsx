@@ -8,8 +8,7 @@ import Shimmer from "@/components/common/shimmer";
 import { RoomCategoryType } from "@/components/types/types";
 
 function RoomCategory() {
-  const { error, isLoading, data } = useGetRoomTypes();
-  console.log("roo  details data", data?.data);
+  const { isLoading, data } = useGetRoomTypes();
   const roomTypes = (data?.data.roomTypes as [RoomCategoryType]) || [];
 
   return (

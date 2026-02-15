@@ -62,6 +62,13 @@ export const BaseProvider = ({
     refresh();
   }, []);
 
+  useEffect(() => {
+    if (alert === "") return;
+    setTimeout(() => {
+      setAlert("");
+    }, 3000);
+  }, [alert]);
+
   const contextValue = useMemo<BaseContextType>(
     () => ({
       userDetails,

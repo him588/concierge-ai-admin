@@ -7,6 +7,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  titleClass?: string;
   children?: React.ReactNode;
   modalBoxClassName?: string;
 }
@@ -15,6 +16,7 @@ function Modal({
   isOpen,
   onClose,
   title,
+  titleClass,
   children,
   modalBoxClassName,
 }: ModalProps) {
@@ -39,10 +41,12 @@ function Modal({
         onClick={(e) => e.stopPropagation()}
         className={twMerge(
           "modal-box bg-white  h-fit  max-h-[90%]  relative",
-          modalBoxClassName
+          modalBoxClassName,
         )}
       >
-        {title && <h3 className="font-bold text-lg">{title}</h3>}
+        {title && (
+          <h3 className={twMerge("font-bold text-lg", titleClass)}>{title}</h3>
+        )}
 
         <div className="py-4">{children}</div>
       </div>
