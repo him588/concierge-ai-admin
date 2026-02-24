@@ -8,13 +8,20 @@ import {
   bookRoom,
   createRoom,
   createRoomType,
+  createService,
+  createStaff,
   getRooms,
   getRoomStatus,
   getRoomTypes,
   getServicesInfo,
   getStaffInfo,
 } from "@/components/api/api";
-import { BookRoomPlayload, CreateRoomTypePayload } from "../types/types";
+import {
+  BookRoomPlayload,
+  CreateRoomTypePayload,
+  Services,
+  Staff,
+} from "../types/types";
 
 export const useGetRoomTypes = () => {
   return useQuery({
@@ -57,6 +64,7 @@ export const useGetServices = () => {
   return useQuery({
     queryKey: ["services"],
     queryFn: () => getServicesInfo(),
+    refetchOnMount: true,
   });
 };
 
@@ -89,7 +97,19 @@ export const useCreateServices = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => {},
+    mutationFn: (serviceData: Services) => createService(serviceData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["services"] });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
+    },
+  });
+};
+
+export const useCreateStaff = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (staffDetails: Staff) => createStaff(staffDetails),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["services"] });
       queryClient.invalidateQueries({ queryKey: ["staff"] });

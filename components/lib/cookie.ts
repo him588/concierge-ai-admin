@@ -5,7 +5,7 @@ export default class CookieProvider extends Component {
   static setCookie(
     key: string,
     value: string,
-    options?: Cookies.CookieAttributes | undefined
+    options?: Cookies.CookieAttributes | undefined,
   ): void {
     Cookies.set(key, value, options);
   }

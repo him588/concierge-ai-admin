@@ -4,6 +4,8 @@ import {
   BookRoomPlayload,
   CreateRoom,
   CreateRoomTypePayload,
+  Services,
+  Staff,
 } from "../types/types";
 import axios from "axios";
 import AppConfig from "../lib/app-config";
@@ -95,12 +97,28 @@ export async function getRoomStatus() {
   });
 }
 
-export async function createService() {
-  return ServiceProvider.apiClient?.get("/room/get-room-status", {
-    headers: {
-      ...JWTProvider.MetaData,
+export async function createService(serviceData: Services) {
+  return ServiceProvider.apiClient?.post(
+    "/services/",
+    { ...serviceData },
+    {
+      headers: {
+        ...JWTProvider.MetaData,
+      },
     },
-  });
+  );
+}
+
+export async function createStaff(staff: Staff) {
+  return ServiceProvider.apiClient?.post(
+    "/staff",
+    { ...staff },
+    {
+      headers: {
+        ...JWTProvider.MetaData,
+      },
+    },
+  );
 }
 
 // export async function getRoomBookings() {

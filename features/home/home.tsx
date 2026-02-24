@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Header from "./sub-components/header";
 import Hero from "./sub-components/hero";
+import axios from "axios";
 
 interface CardProp {
   id: string;
@@ -32,13 +33,89 @@ function LandingPage() {
       content: "Strong confidence in this output.",
     },
   ]);
+  const [input, setInput] = useState("");
+  const containerRef = useRef(null);
+  const [count, setCount] = useState(1);
+
+  const [pagesList, setPagesList] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState(10);
+  const totalPages = 10;
+
+  const PAGE_WINDOW = 5;
+
+  const pages = useMemo(() => {
+    let start = currentPage - Math.floor(PAGE_WINDOW / 2);
+    let end = currentPage + Math.floor(PAGE_WINDOW / 2);
+
+    // Fix when near start
+    if (start < 1) {
+      start = 1;
+      end = PAGE_WINDOW;
+    }
+
+    // Fix when near end
+    if (end > totalPages) {
+      end = totalPages;
+      start = totalPages - PAGE_WINDOW + 1;
+    }
+
+    // Extra safety
+    if (start < 1) start = 1;
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }, [currentPage, totalPages]);
+
+  useEffect(() => {
+    console.log(pages);
+  }, [pages]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log(input);
+    }, 1000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [input]);
+
+  async function handleSubmit() {
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/",
+        { query: input },
+        {},
+      );
+      console.log(response);
+    } catch (error) {
+      console.log("Error while calling api", error);
+    }
+  }
+
+  useEffect(() => {
+    if (containerRef.current === null) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        console.log(entries[0]);
+        if (entries[0].isIntersecting) {
+          setCount((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f5f8ff]">
       <Header />
       <Hero />
-      <div className=" h-[500vh] bg-[gray]"></div>
-      {/* <div className="h-[95vh] w-[50vw] bg-white shadow-xl rounded-2xl p-6 flex flex-col">
+
+      <div className=" h-[100vh] bg-[gray]"></div>
+      <div
+        ref={containerRef}
+        className="h-[95vh] w-[50vw] bg-white shadow-xl rounded-2xl p-6 flex flex-col"
+      >
         <div className="flex-1 overflow-y-auto space-y-4 p-2">
           {data.length === 0 ? (
             <p className="text-gray-400 text-center mt-10">
@@ -53,13 +130,22 @@ function LandingPage() {
           <input
             type="text"
             placeholder="Ask something..."
-            className="flex-1 border border-gray-300 rounded-lg px-4 outline-none focus:ring-2 focus:ring-[#425b73]"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="flex-1 border border-gray-300 text-black rounded-lg px-4 outline-none focus:ring-2 focus:ring-[#425b73]"
           />
-          <button className="px-6 bg-[#425b73] text-white rounded-lg hover:bg-[#36495c] transition">
+          <button
+            onClick={handleSubmit}
+            className="px-6 bg-[#425b73] text-white rounded-lg hover:bg-[#36495c] transition"
+          >
             Ask
           </button>
         </div>
-      </div> */}
+      </div>
+
+      <div className=" flex items-center justify-center">
+        <p>Prev</p>
+      </div>
     </div>
   );
 }

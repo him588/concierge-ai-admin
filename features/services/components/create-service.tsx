@@ -1,6 +1,11 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import { useCreateServices } from "@/components/hooks/use-api";
+import { useBaseContext } from "@/context/base-context";
+import { ChangeEvent, useEffect, useState } from "react";
+import { isAxiosError, errorToString } from "@/components/helper/helper";
 
-function CreateService() {
+function CreateService({ onClose }: { onClose: () => void }) {
+  const { mutate: handleSubmit } = useCreateServices();
+  const { setAlert } = useBaseContext();
   const colors = [
     "#dbc8f7",
     "#b2c6f2",
@@ -14,6 +19,7 @@ function CreateService() {
     description: "",
     isActive: true,
     color: colors[0],
+    isPaid: true,
   });
 
   const handleChange = (
@@ -22,7 +28,8 @@ function CreateService() {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? e.target.checked : value,
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
@@ -31,7 +38,7 @@ function CreateService() {
   }, [formData]);
 
   return (
-    <div className="w-full h-full relative flex flex-col items-center justify-center px-[.5rem] gap-[.5rem] text-[#261d4e]">
+    <div className="w-[380px] h-full relative flex flex-col items-center justify-center px-[.5rem] gap-[.5rem] text-[#261d4e]">
       {/* Name */}
       <div className="w-full">
         <label className="block mb-1 text-sm font-semibold">Name</label>
@@ -78,24 +85,53 @@ function CreateService() {
           ))}
         </div>
       </div>
-      <div className=" w-full flex  gap-[.5rem] mt-[.2rem]  ">
-        <label className="block mb-1 text-sm font-medium">Ready to list.</label>
-        <input
-          type="checkbox"
-          checked={formData.isActive}
-          onChange={() =>
-            setFormData((prev) => {
-              return { ...prev, isActive: !prev.isActive };
-            })
-          }
-          className="checkbox checkbox-sm"
-        />
+
+      <div className=" w-full flex items-center gap-[2rem] mt-[.2rem]  ">
+        <div className=" flex gap-[.5rem]">
+          <label className="block mb-1 text-sm font-medium">
+            Ready to list.
+          </label>
+          <input
+            type="checkbox"
+            checked={formData.isActive}
+            onChange={() =>
+              setFormData((prev) => {
+                return { ...prev, isActive: !prev.isActive };
+              })
+            }
+            className="checkbox checkbox-sm"
+          />
+        </div>
+        <div className=" flex gap-[.5rem]">
+          <label className="block mb-1 text-sm font-medium">Paid Service</label>
+          <input
+            type="checkbox"
+            checked={formData.isPaid}
+            onChange={() =>
+              setFormData((prev) => {
+                return { ...prev, isPaid: !prev.isPaid };
+              })
+            }
+            className="checkbox checkbox-sm"
+          />
+        </div>
       </div>
 
       <button
         type="submit"
+        onClick={() =>
+          handleSubmit(formData, {
+            onError: (error) => {
+              onClose();
+              const message = isAxiosError(error)
+                ? errorToString(error)
+                : String(error);
+              setAlert(message);
+            },
+          })
+        }
         disabled={formData.name.length < 3 || formData.description.length < 3}
-        className={`w-full   text-white py-2 mt-[2rem] rounded-lg  transition ${formData.name.length < 3 || formData.description.length < 3 ? "bg-blue-300" : "hover:bg-blue-700 bg-blue-600 cursor-pointer"}`}
+        className={`w-full   text-white py-2 mt-[2rem] rounded-lg  transition ${formData.name.length < 3 || formData.description.length < 3 ? "bg-[#1c1d4e]/60" : "hover:bg-[#1c1d4e]/90 bg-[#1c1d4e] cursor-pointer"}`}
       >
         Create Service
       </button>

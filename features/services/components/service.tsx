@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import EmptyState from "@/components/common/empty-state";
 import { useGetServices } from "@/components/hooks/use-api";
 import ActiveService from "./active-service";
+import { useServiceContext } from "@/context/service-context";
 
 function Service() {
   const [service, setServices] = useState([]);
+  const { setServiceModal } = useServiceContext();
   const { data } = useGetServices();
   useEffect(() => {
     console.log(data);
@@ -20,7 +22,7 @@ function Service() {
           description="This property doesn’t have any services yet. Start by adding one."
           buttonText="+ Add Service"
           className=""
-          onButtonClick={() => console.log("Add Service")}
+          onButtonClick={() => setServiceModal("Services")}
         />
       ) : (
         <ActiveService />

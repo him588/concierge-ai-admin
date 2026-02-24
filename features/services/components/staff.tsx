@@ -1,10 +1,12 @@
 "use client";
 import EmptyState from "@/components/common/empty-state";
 import { useGetStaff } from "@/components/hooks/use-api";
+import { useServiceContext } from "@/context/service-context";
 import React, { useState } from "react";
 
 function Staff() {
   const [staff, setStaff] = useState([]);
+  const { setServiceModal } = useServiceContext();
   const { data } = useGetStaff();
   return (
     <section className=" h-[100%]">
@@ -15,7 +17,7 @@ function Staff() {
           description="This property doesn’t have any Staff yet. Start by adding one."
           buttonText="+ Add Staff"
           className=""
-          onButtonClick={() => console.log("Add Service")}
+          onButtonClick={() => setServiceModal("Staff")}
         />
       ) : (
         ""

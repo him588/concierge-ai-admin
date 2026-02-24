@@ -1,7 +1,9 @@
+import axios, { Axios, AxiosError } from "axios";
+
 export function handleChangeState<T>(
   e: React.ChangeEvent<HTMLInputElement>,
   setForm: React.Dispatch<React.SetStateAction<T>>,
-  key: string
+  key: string,
 ) {
   setForm((prev) => {
     const updatedValue = { ...prev, [key]: e.target.value };
@@ -11,7 +13,7 @@ export function handleChangeState<T>(
 
 export function resolveError<T>(
   setForm: React.Dispatch<React.SetStateAction<T>>,
-  key: string
+  key: string,
 ) {
   setForm((prev) => {
     const updatedValue = { ...prev, [key]: "" };
@@ -43,3 +45,29 @@ export const withOpacity = (hex: string, opacity: number) => {
   const b = parseInt(hex.slice(5, 7), 16);
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
+
+export function isAxiosError(error: unknown): boolean {
+  return axios.isAxiosError(error);
+}
+
+export function errorToString(error: unknown, key = "message"): string {
+  if (error instanceof AxiosError) {
+    const data = error.response?.data;
+
+    if (typeof data === "string") return data;
+
+    if (typeof data === "object" && data !== null) {
+      const record = data as Record<string, string>;
+
+      return record[key] || record.message || record.error || error.message;
+    }
+
+    return error.message;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return String(error);
+}

@@ -181,7 +181,7 @@ function ActiveService() {
           ))}
         </div>
       </div>
-      {showModal && (
+      {/* {showModal && (
         <Modal
           modalBoxClassName=" w-[380px] rounded-[1.6rem] p-[.5rem]"
           isOpen={showModal}
@@ -189,9 +189,9 @@ function ActiveService() {
           title="Create Service"
           titleClass="text-center text-[#1c1d4e] text-[1.4rem] font-semibold"
         >
-          <CreateService />
+          <CreateService onClose={() => setShowModal(false)} />
         </Modal>
-      )}
+      )} */}
 
       <RecentServices />
     </div>
